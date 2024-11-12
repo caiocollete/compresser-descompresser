@@ -180,21 +180,55 @@ ListaGen* gerarLG(Tabela *T){
 			aux=aux->prox;
 		}	
 	}
-	auxL=L;
-	while(auxL!=NULL){
-		printf("----\n");
-		printf("tSTR: %s\tfreq: %d\n",auxL->no->string,auxL->no->freqArv);
-		auxL=auxL->prox;
-	}
-	
-	
+	auxL=L;	
 	return L;
 }
 
+void inserirOrdenadoListaGen(ListaGen **L, ListaGen *info) {
+    if (*L == NULL || (*L)->no->freqArv > info->no->freqArv) {
+        info->prox = *L;
+        *L = info;
+        return;
+    }
+    
+    ListaGen *aux = *L;
+    while (aux->prox != NULL && aux->prox->no->freqArv <= info->no->freqArv) {
+        aux = aux->prox;
+    }
 
-void GerarArvore(ListaGen**L){
-	// Implementar a geracao da Arvore, ir juntando os nos ate sobrar um.
+    info->prox = aux->prox;
+    aux->prox = info;
 }
+
+
+
+void GerarArvore(ListaGen **L) {
+    while (*L != NULL && (*L)->prox != NULL) {
+        ListaGen *aux = (*L)->prox->prox; // salvando o proximo->proximo
+        ListaGen *novo = (ListaGen *)malloc(sizeof(ListaGen)); // nova caixinha
+        Tree *novoNo = (Tree *)malloc(sizeof(Tree)); // no que vai ser apontado pela nova caixinha
+
+        if (novo != NULL || novoNo != NULL) {
+	        novoNo->freqArv = (*L)->no->freqArv + (*L)->prox->no->freqArv;
+	        strcpy(novoNo->string, "%null");
+	        novoNo->dir = (*L)->prox->no;
+	        novoNo->esq = (*L)->no;
+	    
+	        novo->no = novoNo;
+	        novo->prox = NULL;
+	        
+	        inserirOrdenadoListaGen(&aux, novo);
+	
+	        free((*L)->prox);
+	        free(*L);
+	
+	        *L = aux;
+        }
+		else
+        	printf("novo==null\n");
+    }
+}
+
 
 
 
