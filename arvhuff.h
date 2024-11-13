@@ -1,6 +1,7 @@
 #include <string.h>
 #include <windows.h>
 #define MAXSTRING 64
+#define CODHUFF 24
 
 //	ListaGen
 //	|-----------|	  
@@ -11,11 +12,12 @@
 //	  |Tree *no|
 //	  |--------|
 
+
 struct infos{
 	int simbol;
 	char string[MAXSTRING];
 	int freq;
-	char cod_huff[8];
+	char cod_huff[CODHUFF];
 	struct infos *prox;
 }; typedef struct infos Tabela;
 
@@ -88,6 +90,7 @@ Tabela *gerarTabela(char filename[MAXSTRING]){
 			if (linha[i] == ' ') {
 			    string[contStr] = '\0';
 			    adicionarFreqTabela(&tabela, string);
+			    adicionarFreqTabela(&tabela, " ");
 			    contStr = 0;
 			}
 			else{
@@ -100,7 +103,7 @@ Tabela *gerarTabela(char filename[MAXSTRING]){
 	}
 	else
 		printf("Nao foi possivel compressar a string: \n[READ ERROR:gerarTabela()]");
-	
+	fclose(arq);
 	return tabela;
 }
 
