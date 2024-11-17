@@ -18,6 +18,7 @@ void GeraCodigos(Tree*root, Tabela**T ,char codhuff[CODHUFF]){ // algoritimo fiz
 				aux=aux->prox;
 			}
 			if(aux!=NULL && strcmp(aux->string,root->string)==0){
+				printf("\nINFO SENDO CODIFICADA: %s",aux->string);
 				strcpy(aux->cod_huff,codhuff);
 			}
 		}
@@ -67,17 +68,21 @@ void GerarStringCompilada(char filename[MAXSTRING], Tabela *t){
 	FILE *out = fopen("strCompilada.txt","w");
 	int tamArq = getFileSize(arq);
 	char stringCompilada[tamArq];
+	stringCompilada[0] = '\0';
 	char linha[tamArq];
 	
 	if(fgets(linha,tamArq,arq)){
 		int i=0, contStr=0;
 		char string[MAXSTRING];
+		printf("\n%s",linha);
 		while(linha[i]!='\0'){
 			if (linha[i] == ' ') {
 			    string[contStr] = '\0';
 			    strcat(stringCompilada,procurarStringTabela(string,t));
 			    strcat(stringCompilada,procurarStringTabela(" ",t));
 			    contStr = 0;
+			    //printf("\n%s",string);  //fiz esses prints pra testar
+			    //printf("\n%s",stringCompilada);
 			}
 			else{
 				string[contStr] = linha[i];
@@ -93,17 +98,47 @@ void GerarStringCompilada(char filename[MAXSTRING], Tabela *t){
 }
 	
 void GravarTabela(Tabela *T){
-	FILE *F = fopen("tabela.tabela","w");
+	FILE *F = fopen("tabela.tabela","wb");
 	
 	while(T!=NULL){
 		//printaTab no Arquivo
-		fseek(F,0,SEEK_END);
-		fwrite(&T, sizeof(Tabela),1,F);
+		printf("SIMBOL: %d\tSTR: %s\tfreq: %d\tcodHuff: %s\n",T->simbol,T->string,T->freq,T->cod_huff);
+		fwrite(T, sizeof(Tabela),1,F);
 		T=T->prox;
 	}
 	
 	fclose(F);
 }
+
+void printarArvore(Tree *raiz){  //funcao pra printar a arvore, mas nao em formato de arvore
+	if(raiz!=NULL){
+		if(raiz->esq == NULL && raiz->dir == NULL){
+			printf("\nINFO: %s -- FREQ: %d",raiz->string,raiz->freqArv);
+		}
+	
+		printarArvore(raiz->esq);
+		printarArvore(raiz->dir);
+	}
+}
+
+void printarArvoreFormatada(Tree *raiz, int nivel) { //funcao pra printar a arvore em formato de arvore
+    if (raiz == NULL) {
+        return;
+    }
+
+    // Primeiro, imprime o nó da direita (subárvore direita)
+    printarArvoreFormatada(raiz->dir, nivel + 1);
+
+    // Imprime o nó atual com o deslocamento correspondente ao nível
+    for (int i = 0; i < nivel; i++) {
+        printf("\t"); // Tabulação para deslocar o nó
+    }
+    printf("(%s, %d)\n", raiz->string, raiz->freqArv);
+
+    // Depois, imprime o nó da esquerda (subárvore esquerda)
+    printarArvoreFormatada(raiz->esq, nivel + 1);
+}
+
 
 int main(void){
 	
@@ -117,9 +152,11 @@ int main(void){
 	
 	GerarArvore(&LG);
 	GeraCodigos(LG->no, &tabela , "");
-	//printar(tabela);
-	GerarStringCompilada("message.txt",tabela);
+	printar(tabela);
+	printarArvoreFormatada(LG->no,0);
 	GravarTabela(tabela);
+	GerarStringCompilada("message.txt",tabela);
+	
 	
 	return 0;
 }
