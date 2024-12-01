@@ -76,7 +76,7 @@ void corrigeTab(Tabela **t){
 Tabela *gerarTabela(char filename[MAXSTRING]){
 	
 	FILE *arq = fopen(filename,"r");
-	int tamArq = getFileSize(arq);
+	int tamArq = getFileSize(arq)+10;
 	char linha[tamArq];
 	Tabela *tabela=(Tabela*)malloc(sizeof(Tabela));
 	tabela->prox = NULL;
