@@ -66,8 +66,8 @@ void GerarStringCompilada(char filename[MAXSTRING], Tabela *t){
 	
 	FILE *arq = fopen(filename,"r");
 	FILE *out = fopen("strCompilada.txt","w");
-	int tamArq = getFileSize(arq);
-	char stringCompilada[tamArq];
+	int tamArq = getFileSize(arq)+2;
+	char stringCompilada[tamArq*2];
 	stringCompilada[0] = '\0';
 	char linha[tamArq];
 	
@@ -76,13 +76,13 @@ void GerarStringCompilada(char filename[MAXSTRING], Tabela *t){
 		char string[MAXSTRING];
 		printf("\n%s",linha);
 		while(linha[i]!='\0'){
-			if (linha[i] == ' ') {
+			if (linha[i] == ' ' || linha[i] == '\0') {
 			    string[contStr] = '\0';
 			    strcat(stringCompilada,procurarStringTabela(string,t));
 			    strcat(stringCompilada,procurarStringTabela(" ",t));
 			    contStr = 0;
-			    //printf("\n%s",string);  //fiz esses prints pra testar
-			    //printf("\n%s",stringCompilada);
+			    printf("\n%s",string);  //fiz esses prints pra testar
+//			    printf("\n%s",stringCompilada);
 			}
 			else{
 				string[contStr] = linha[i];
