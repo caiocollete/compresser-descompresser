@@ -158,7 +158,7 @@ void GerarStringCompilada(char filename[MAXSTRING], Tabela *t){
 		int i=0, contStr=0;
 		char string[MAXSTRING];
 		printf("\n%s",linha);
-		while(linha[i]!='\0'){
+		while(i<tamArq){
 			if (linha[i] == ' ' || linha[i] == '\0') {
 			    string[contStr] = '\0';
 			    strcat(stringCompilada,procurarStringTabela(string,t));
@@ -173,6 +173,9 @@ void GerarStringCompilada(char filename[MAXSTRING], Tabela *t){
 			}
 			i++;
 		}
+        string[contStr] = '\0';
+        strcat(stringCompilada,procurarStringTabela(string,t));
+        
 		stringToBit(stringCompilada,string);
 		fprintf(out,"%s" ,string);
 	}
