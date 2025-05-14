@@ -81,8 +81,6 @@ void GerarStringCompilada(char filename[MAXSTRING], Tabela *t){
 			    strcat(stringCompilada,procurarStringTabela(string,t));
 			    strcat(stringCompilada,procurarStringTabela(" ",t));
 			    contStr = 0;
-			    //printf("\n%s",string);  //fiz esses prints pra testar
-			    //printf("\n%s",stringCompilada);
 			}
 			else{
 				string[contStr] = linha[i];
@@ -90,11 +88,18 @@ void GerarStringCompilada(char filename[MAXSTRING], Tabela *t){
 			}
 			i++;
 		}
+        /*
+         antes de printar no arquivo ->
+                criar uma funcao que separa a cada 8bits(1bit =  1 char Ñ deve-se transformar esse char em bit)
+                e salvar o byte em char (usar union), assim obtendo uma string
+                e retorna essa string por parametro
+        */
 		fprintf(out,"%s" ,stringCompilada);
 	}
 	else
 		printf("Nao foi possivel compressar a string: \n[READ ERROR: GerarStringCompiladaTabela()]");
 	fclose(out);
+    fclose(arq);
 }
 	
 void GravarTabela(Tabela *T){
@@ -126,7 +131,7 @@ void printarArvoreFormatada(Tree *raiz, int nivel) { //funcao pra printar a arvo
         return;
     }
 
-    // Primeiro, imprime o nó da direita (subárvore direita)
+    // Primeiro, imprime o no da direita (subarvore direita)
     printarArvoreFormatada(raiz->dir, nivel + 1);
 
     // Imprime o nó atual com o deslocamento correspondente ao nível
@@ -135,7 +140,7 @@ void printarArvoreFormatada(Tree *raiz, int nivel) { //funcao pra printar a arvo
     }
     printf("(%s, %d)\n", raiz->string, raiz->freqArv);
 
-    // Depois, imprime o nó da esquerda (subárvore esquerda)
+    // Depois, imprime o nó da esquerda (subarvore esquerda)
     printarArvoreFormatada(raiz->esq, nivel + 1);
 }
 

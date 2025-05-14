@@ -1,5 +1,4 @@
 #include <string.h>
-#include <windows.h>
 #define MAXSTRING 64
 #define CODHUFF 24
 
@@ -45,67 +44,82 @@ long getFileSize(FILE *file) {
   return size;
 }
 
-void adicionarFreqTabela(Tabela **tabela,char string[]){
-	//search string in tabela;
-	Tabela *aux = *tabela;
-	int simbol = -1;
-	while(aux->prox!=NULL && strcmp(aux->prox->string,string)!=0){
-		aux=aux->prox;
-		simbol=aux->simbol;
-	}
-	if(aux->prox!=NULL){
-		aux->prox->freq++;
-	}
-	else{
-		Tabela *novo = (Tabela*)malloc(sizeof(Tabela));
-		
-		novo->simbol=simbol+1;
-		strcpy(novo->string,string);
-		novo->freq=1;
-		novo->prox=NULL;
-		
-		aux->prox = novo;
-	}	
-}
-
 void corrigeTab(Tabela **t){
-	if((*t)->simbol!=0)
-		*t=(*t)->prox;
+    if((*t)->simbol!=0)
+        *t=(*t)->prox;
 }
 
-Tabela *gerarTabela(char filename[MAXSTRING]){
-	
-	FILE *arq = fopen(filename,"r");
-	int tamArq = getFileSize(arq);
-	char linha[tamArq];
-	Tabela *tabela=(Tabela*)malloc(sizeof(Tabela));
-	tabela->prox = NULL;
-	
-	
-	
-	if(fgets(linha,tamArq,arq)){
-		int i=0, contStr=0;
-		char string[MAXSTRING];
-		while(linha[i]!='\0'){
-			if (linha[i] == ' ') {
-			    string[contStr] = '\0';
-			    adicionarFreqTabela(&tabela, string);
-			    adicionarFreqTabela(&tabela, " ");
-			    contStr = 0;
-			}
-			else{
-				string[contStr] = linha[i];
-				contStr++;
-			}
-			i++;
-		}
-		corrigeTab(&tabela);
-	}
-	else
-		printf("Nao foi possivel compressar a string: \n[READ ERROR:gerarTabela()]");
-	fclose(arq);
-	return tabela;
+void adicionarFreqTabela(Tabela **tabela, char string[]) {
+    Tabela *aux = *tabela;
+    Tabela *anterior = NULL;
+    int simbol = 0;
+
+    while (aux != NULL) {
+        if (strcmp(aux->string, string) == 0) {
+            aux->freq++;
+            return;
+        }
+        anterior = aux;
+        simbol = aux->simbol;
+        aux = aux->prox;
+    }
+
+    // Se n‹o encontrou, cria novo
+    Tabela *novo = (Tabela*)malloc(sizeof(Tabela));
+    novo->simbol = simbol + 1;
+    strcpy(novo->string, string);
+    novo->freq = 1;
+    novo->prox = NULL;
+
+    if (anterior == NULL) {
+        *tabela = novo;
+    } else {
+        anterior->prox = novo;
+    }
 }
+
+Tabela *gerarTabela(char filename[MAXSTRING]) {
+    FILE *arq = fopen(filename, "r");
+    if (!arq) {
+        printf("Erro ao abrir o arquivo.\n");
+        return NULL;
+    }
+
+    int tamArq = getFileSize(arq);
+    char linha[tamArq];
+    Tabela *tabela = NULL;
+
+    if (fgets(linha, tamArq, arq)) {
+        int i = 0, contStr = 0;
+        char string[MAXSTRING];
+
+        while (linha[i] != '\0') {
+            if (linha[i] == ' ') {
+                string[contStr] = '\0';
+                if (contStr > 0) {
+                    adicionarFreqTabela(&tabela, string);
+                }
+                adicionarFreqTabela(&tabela, " ");
+                contStr = 0;
+            } else {
+                string[contStr++] = linha[i];
+            }
+            i++;
+        }
+
+        // Adiciona a œltima palavra, se houver
+        if (contStr > 0) {
+            string[contStr] = '\0';
+            adicionarFreqTabela(&tabela, string);
+        }
+    } else {
+        printf("Nao foi possivel compressar a string: \n[READ ERROR:gerarTabela()]\n");
+    }
+
+    fclose(arq);
+    return tabela;
+}
+
 
 ListaGen* CriaCaixaLG(Tabela *t){
 	ListaGen *L = (ListaGen*)malloc(sizeof(ListaGen));
