@@ -10,6 +10,22 @@
 	struct infos *prox;
 */
 
+struct bits{
+	unsigned char b7:1;
+	unsigned char b6:1;
+	unsigned char b5:1;
+	unsigned char b4:1;
+	unsigned char b3:1;
+	unsigned char b2:1;
+	unsigned char b1:1;
+	unsigned char b0:1;
+};
+
+union bytes{
+	struct bits bi;
+	unsigned char num;
+};
+
 void GeraCodigos(Tree*root, Tabela**T ,char codhuff[CODHUFF]){ // algoritimo fiz em pre_ordem para salvar os codigos de huff na tabela
 	if(root!=NULL){
 		if(strcmp(root->string,"%null")!=0){
@@ -61,13 +77,80 @@ char *procurarStringTabela(char string[], Tabela*t){
 	return "";
 }
 
+void stringToBit(char stringCompilada[], char string[]){
+	union bytes bytes;
+	int i=0, TL=0;
+	while(i<strlen(stringCompilada)){
+		if(i<strlen(stringCompilada)){
+			if(stringCompilada[i]=='0') bytes.bi.b0=0;
+			if(stringCompilada[i]=='1') bytes.bi.b0=1;
+		}
+		else bytes.bi.b0=0;
+		i++;
+
+		
+		if(i<strlen(stringCompilada)){
+			if(stringCompilada[i]=='0') bytes.bi.b1=0;
+			if(stringCompilada[i]=='1') bytes.bi.b1=1;
+		}
+		else bytes.bi.b1=0;
+		i++;
+		
+		if(i<strlen(stringCompilada)){
+			if(stringCompilada[i]=='0') bytes.bi.b2=0;
+			if(stringCompilada[i]=='1') bytes.bi.b2=1;
+		}
+		else bytes.bi.b2=0;
+		i++;
+
+		if(i<strlen(stringCompilada)){
+			if(stringCompilada[i]=='0') bytes.bi.b3=0;
+			if(stringCompilada[i]=='1') bytes.bi.b3=1;
+		}
+		else bytes.bi.b3=0;
+		i++;
+		
+		if(i<strlen(stringCompilada)){
+			if(stringCompilada[i]=='0') bytes.bi.b4=0;
+			if(stringCompilada[i]=='1') bytes.bi.b4=1;
+		}
+		else bytes.bi.b4=0;
+		i++;
+		
+		if(i<strlen(stringCompilada)){
+			if(stringCompilada[i]=='0') bytes.bi.b5=0;
+			if(stringCompilada[i]=='1') bytes.bi.b5=1;
+		}
+		else bytes.bi.b5=0;
+		i++;
+		
+		if(i<strlen(stringCompilada)){
+			if(stringCompilada[i]=='0') bytes.bi.b6=0;
+			if(stringCompilada[i]=='1') bytes.bi.b6=1;
+		}
+		else bytes.bi.b6=0;
+		i++;
+		
+		if(i<strlen(stringCompilada)){
+			if(stringCompilada[i]=='0') bytes.bi.b7=0;
+			if(stringCompilada[i]=='1') bytes.bi.b7=1;
+		}
+		else bytes.bi.b7=0;
+		i++;
+		
+		string[TL]=bytes.num;
+		TL++;
+	}
+	
+}
 
 void GerarStringCompilada(char filename[MAXSTRING], Tabela *t){
 	
 	FILE *arq = fopen(filename,"r");
 	FILE *out = fopen("strCompilada.txt","w");
-	int tamArq = getFileSize(arq);
-	char stringCompilada[tamArq];
+	int tamArq = getFileSize(arq)+10;
+	char stringCompilada[tamArq*2];
+	char string[tamArq];
 	stringCompilada[0] = '\0';
 	char linha[tamArq];
 	
@@ -75,14 +158,14 @@ void GerarStringCompilada(char filename[MAXSTRING], Tabela *t){
 		int i=0, contStr=0;
 		char string[MAXSTRING];
 		printf("\n%s",linha);
-		while(linha[i]!='\0'){
-			if (linha[i] == ' ') {
+		while(i<tamArq){
+			if (linha[i] == ' ' || linha[i] == '\0') {
 			    string[contStr] = '\0';
 			    strcat(stringCompilada,procurarStringTabela(string,t));
 			    strcat(stringCompilada,procurarStringTabela(" ",t));
 			    contStr = 0;
-			    //printf("\n%s",string);  //fiz esses prints pra testar
-			    //printf("\n%s",stringCompilada);
+//			    printf("\n%s",string);  //fiz esses prints pra testar
+//			    printf("\n%s",stringCompilada);
 			}
 			else{
 				string[contStr] = linha[i];
@@ -90,11 +173,16 @@ void GerarStringCompilada(char filename[MAXSTRING], Tabela *t){
 			}
 			i++;
 		}
-		fprintf(out,"%s" ,stringCompilada);
+        string[contStr] = '\0';
+        strcat(stringCompilada,procurarStringTabela(string,t));
+        
+		stringToBit(stringCompilada,string);
+		fprintf(out,"%s" ,string);
 	}
 	else
 		printf("Nao foi possivel compressar a string: \n[READ ERROR: GerarStringCompiladaTabela()]");
 	fclose(out);
+	fclose(arq);
 }
 	
 void GravarTabela(Tabela *T){

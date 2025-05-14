@@ -1,5 +1,4 @@
 #include <string.h>
-#include <windows.h>
 #define MAXSTRING 64
 #define CODHUFF 24
 
@@ -76,7 +75,7 @@ void corrigeTab(Tabela **t){
 Tabela *gerarTabela(char filename[MAXSTRING]){
 	
 	FILE *arq = fopen(filename,"r");
-	int tamArq = getFileSize(arq);
+	int tamArq = getFileSize(arq)+10;
 	char linha[tamArq];
 	Tabela *tabela=(Tabela*)malloc(sizeof(Tabela));
 	tabela->prox = NULL;
@@ -86,7 +85,7 @@ Tabela *gerarTabela(char filename[MAXSTRING]){
 	if(fgets(linha,tamArq,arq)){
 		int i=0, contStr=0;
 		char string[MAXSTRING];
-		while(linha[i]!='\0'){
+		while(i<tamArq){
 			if (linha[i] == ' ') {
 			    string[contStr] = '\0';
 			    adicionarFreqTabela(&tabela, string);
@@ -99,6 +98,8 @@ Tabela *gerarTabela(char filename[MAXSTRING]){
 			}
 			i++;
 		}
+        string[contStr] = '\0';
+        adicionarFreqTabela(&tabela, string);
 		corrigeTab(&tabela);
 	}
 	else
