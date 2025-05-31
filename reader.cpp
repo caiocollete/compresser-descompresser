@@ -48,7 +48,7 @@ void exibirTabela(char nomeArq[]){
 	
 	while(fread(&tabela,sizeof(Tabela),1,tab)==1){
 		
-		printf("SIMBOL: %d\tSTR: %s\tfreq: %d\tcodHuff: %s\n",tabela.simbolo,tabela.string,tabela.freq,tabela.codHuff);
+		printf("SIMBOL: %d\tSTR: %s\tcodHuff: %s\n",tabela.simbolo,tabela.string,tabela.codHuff);
 
 	}
 }
